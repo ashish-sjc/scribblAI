@@ -1,0 +1,7 @@
+*{box-sizing:border-box}
+body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin:0}
+.app{display:flex;gap:16px;padding:16px}
+.sidebar{width:260px;border-right:1px solid #eee;padding-right:16px}
+.canvasWrap{flex:1;display:flex;flex-direction:column}
+canvas{background:#fff;border:1px solid #ddd}
+.controls{margin-bottom:8px}
