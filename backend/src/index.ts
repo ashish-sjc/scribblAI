@@ -13,7 +13,7 @@ const io = new Server(server, {
 const roomHistory = new Map<string, DrawEvent[]>()
 const MAX_HISTORY = 20000
 
-type DrawEvent = { x:number; y:number; t: 'start'|'move'|'end' }
+type DrawEvent = { x:number; y:number; t: 'start'|'move'|'end'; color?: string }
 
 io.on('connection', socket => {
   console.log('conn', socket.id)

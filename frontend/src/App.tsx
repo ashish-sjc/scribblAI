@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react'
 import { io, Socket } from 'socket.io-client'
 
-type DrawEvent = { x: number; y: number; t: 'start' | 'move' | 'end' }
+type DrawEvent = { x: number; y: number; t: 'start' | 'move' | 'end'; color?: string }
 
 const socket: Socket = io('http://localhost:3000')
 
@@ -100,7 +100,7 @@ export default function App() {
     const rect = canvasRef.current!.getBoundingClientRect()
     const x = (e.clientX - rect.left)
     const y = (e.clientY - rect.top)
-    const ev = { x, y, t }
+    const ev = { x, y, t, color }
     socket.emit('draw', ev)
     drawOnCanvas(ev, true)
   }
@@ -109,6 +109,10 @@ export default function App() {
 
   const drawOnCanvas = (ev: DrawEvent, isLocal: boolean) => {
     const ctx = getCtx()
+    // If the event contains color information, update the canvas stroke style
+    if (ev.color) {
+      ctx.strokeStyle = ev.color;
+    }
     if (ev.t === 'start') {
       ctx.beginPath()
       ctx.moveTo(ev.x, ev.y)
