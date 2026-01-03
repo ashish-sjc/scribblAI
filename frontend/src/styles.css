@@ -183,6 +183,14 @@ button:active {
   font-size: 24px;
 }
 
+/* App name styling */
+.app-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
 /* Color picker styling */
 .color-picker {
   display: flex;

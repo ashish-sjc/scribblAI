@@ -127,7 +127,14 @@ export default function App() {
   return (
     <div className="app">
       <div className="sidebar">
-        <h3>Skribbl MVP</h3>
+        <div style={{display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px'}}>
+          <svg width="32" height="32" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="48" fill="#1DB954"/>
+            <path d="M30,30 L30,70 L70,50 Z" fill="white"/>
+            <circle cx="50" cy="50" r="20" fill="#121212"/>
+          </svg>
+          <h3>Scribit</h3>
+        </div>
         <input placeholder="Name" value={name} onChange={e=>setName(e.target.value)} />
         <input placeholder="Room" value={room} onChange={e=>setRoom(e.target.value)} />
         <div className="color-picker">
