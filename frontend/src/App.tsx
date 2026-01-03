@@ -8,7 +8,7 @@ const socket: Socket = io('http://localhost:3000')
 export default function App() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const [isDrawing, setIsDrawing] = useState(false)
-  const [color] = useState('#111')
+  const [color, setColor] = useState('#1db954')
   const [name, setName] = useState('')
   const [room, setRoom] = useState('lobby')
   const [messages, setMessages] = useState<string[]>([])
@@ -46,14 +46,26 @@ export default function App() {
   useEffect(() => {
     const c = canvasRef.current
     if (!c) return
-    c.width = c.clientWidth * devicePixelRatio
-    c.height = c.clientHeight * devicePixelRatio
-    const ctx = c.getContext('2d')!
-    ctx.scale(devicePixelRatio, devicePixelRatio)
-    ctx.lineWidth = 3
-    ctx.lineCap = 'round'
-    ctx.strokeStyle = color
+    
+    // Only initialize the canvas once, not on every color change
+    if (!canvasInitialized.current) {
+      c.width = c.clientWidth * devicePixelRatio
+      c.height = c.clientHeight * devicePixelRatio
+      const ctx = c.getContext('2d')!
+      ctx.scale(devicePixelRatio, devicePixelRatio)
+      ctx.lineWidth = 3
+      ctx.lineCap = 'round'
+      ctx.strokeStyle = color
+      canvasInitialized.current = true
+    } else {
+      // Just update the stroke style for color changes
+      const ctx = c.getContext('2d')!
+      ctx.strokeStyle = color
+    }
   }, [color])
+  
+  // Keep track of whether we've initialized the canvas
+  const canvasInitialized = useRef(false)
 
   const join = () => {
     if (!name) return alert('Enter name')
@@ -112,19 +124,27 @@ export default function App() {
     <div className="app">
       <div className="sidebar">
         <h3>Skribbl MVP</h3>
-        <div>
-          <input placeholder="Name" value={name} onChange={e=>setName(e.target.value)} />
-        </div>
-        <div>
-          <input placeholder="Room" value={room} onChange={e=>setRoom(e.target.value)} />
+        <input placeholder="Name" value={name} onChange={e=>setName(e.target.value)} />
+        <input placeholder="Room" value={room} onChange={e=>setRoom(e.target.value)} />
+        <div className="color-picker">
+          <label>Brush Color:</label>
+          <input type="color" value={color} onChange={e=>setColor(e.target.value)} />
         </div>
         <button onClick={join}>Join Room</button>
-        <div style={{marginTop:12}}>
-          <h4>Chat</h4>
-          <div style={{height:200,overflow:'auto',border:'1px solid #eee',padding:8}}>
-            {messages.map((m,i)=>(<div key={i}>{m}</div>))}
+        <div className="chat-container">
+          <div className="chat-header">Chat</div>
+          <div className="chat-messages">
+            {messages.map((m,i)=>(<div key={i} className="chat-message">{m}</div>))}
           </div>
-          <ChatInput onSend={sendChat} />
+          <div className="chat-input-container">
+            <input 
+              className="chat-input" 
+              value={name} 
+              onChange={e=>setName(e.target.value)} 
+              placeholder="Type a message..." 
+            />
+            <button className="chat-send-button" onClick={() => sendChat(name)}>Send</button>
+          </div>
         </div>
       </div>
       <div className="canvasWrap">
@@ -140,16 +160,6 @@ export default function App() {
           />
         </div>
       </div>
-    </div>
-  )
-}
-
-function ChatInput({onSend}:{onSend:(s:string)=>void}){
-  const [text,setText] = useState('')
-  return (
-    <div style={{marginTop:8}}>
-      <input value={text} onChange={e=>setText(e.target.value)} placeholder="Type..." />
-      <button onClick={()=>{onSend(text); setText('')}}>Send</button>
     </div>
   )
 }
